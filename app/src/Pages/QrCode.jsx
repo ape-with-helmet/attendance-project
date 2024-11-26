@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import axios from 'axios';
+import '../StyleSheets/main.css'
 
 const QRCodeScanner = () => {
   const [scannedText, setScannedText] = useState('');
@@ -29,7 +30,7 @@ const QRCodeScanner = () => {
   useEffect(() => {
     const scanner = new Html5QrcodeScanner(
       'reader',
-      { fps: 60, qrbox: 1000 }
+      { fps: 1, qrbox: 1000 }
     );
 
     scanner.render(
@@ -52,18 +53,36 @@ const QRCodeScanner = () => {
 
   return (
     <>
-      <div id="reader" style={{ width: '50%' }} />
-      {
-      scannedText && <p>
-          Marked Attendance for: <br/>
-          Admission No : {data.admission_no} <br/>
-          Name : {data.s_name} <br/>
-          USN : {data.usn} <br/>
-          Branch : {data.branch} <br/>
-          Section : {data.section} <br/>
-        </p>
-      }
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <div className="qrreader_main_sector">
+        <div id="reader" style={{ width: '50%' }} />
+        <div className="qr_info">
+          {
+          scannedText && <>
+              <div className="qr_dataline">
+                <div className="holder">Admission No : </div>
+                <div className="qrdata">{data.admission_no}</div>
+              </div>
+              <div className="qr_dataline">
+                <div className="holder">Name : </div>
+                <div className="qrdata">{data.s_name}</div>
+              </div>
+              <div className="qr_dataline">
+                <div className="holder">USN : </div>
+                <div className="qrdata">{data.usn}</div>
+              </div>
+              <div className="qr_dataline">
+                <div className="holder">Branch : </div>
+                <div className="qrdata">{data.branch}</div>
+              </div>
+              <div className="qr_dataline">
+                <div className="holder">Section : </div>
+                <div className="qrdata">{data.section}</div>
+              </div>
+              </>
+          }
+        </div>
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+      </div>
     </>
   );
 };
