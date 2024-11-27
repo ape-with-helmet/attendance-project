@@ -13,22 +13,30 @@ const AdminControlPage = () => {
   const [role, setRole] = useState('');
   const [selectedDrive, setSelectedDrive] = useState('');
 
+  const token = localStorage.getItem('token');  // Get the JWT token from localStorage
+
   useEffect(() => {
-    // Fetch student list and drive list on page load
-    axios.get('http://localhost:5000/students')
+    // Fetch student list and drive list on page load with JWT token in headers
+    axios.get('http://localhost:5000/students', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
       .then(response => setStudents(response.data))
       .catch(error => console.error('Error fetching students:', error));
 
-    axios.get('http://localhost:5000/drives')
+    axios.get('http://localhost:5000/drives', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
       .then(response => setDriveList(response.data))
       .catch(error => console.error('Error fetching drives:', error));
-  }, []);
+  }, [token]);
 
   const handleRoleChange = async (usn) => {
     try {
       await axios.post('http://localhost:5000/admin/change-role', {
         usn,
         newRole: role,
+      }, {
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       alert('Role updated successfully');
     } catch (error) {
@@ -40,6 +48,8 @@ const AdminControlPage = () => {
     try {
       const response = await axios.post('http://localhost:5000/attendance/download', {
         driveName: selectedDrive
+      }, {
+        headers: { 'Authorization': `Bearer ${token}` }
       });
       // Assuming response contains the Excel file
       const blob = new Blob([response.data], { type: 'application/vnd.ms-excel' });

@@ -5,15 +5,16 @@ import '../StyleSheets/AddDriveForm.css';
 const AddDriveForm = () => {
   const [companyName, setCompanyName] = useState('');
   const [ctc, setCtc] = useState('');
-  const [jobDescription, setJobDescription] = useState('');
+  const [requirements, setRequirements] = useState('');
   const [jobRole, setJobRole] = useState('');
-  const [cgpaCutoff, setCgpaCutoff] = useState('');
+  const [cutoff, setCutoff] = useState(''); // Changed from cgpaCutoff to cutoff
   const [error, setError] = useState('');
+  const [driveDate, setDriveDate] = useState(''); // Ensure this is formatted as YYYY-MM-DD
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!companyName || !ctc || !jobDescription || !jobRole || !cgpaCutoff) {
+    if (!companyName || !ctc || !requirements || !jobRole || !cutoff || !driveDate) {
       setError('All fields are required!');
       return;
     }
@@ -21,21 +22,25 @@ const AddDriveForm = () => {
     const newDrive = {
       companyName,
       ctc,
-      jobDescription,
+      requirements,
       jobRole,
-      cgpaCutoff
+      cutoff,
+      driveDate
     };
 
     try {
-      const response = await axios.post('http://localhost:5000/drives', newDrive);
-      if (response.status === 201) {
+      const response = await axios.post('http://localhost:5000/add-company-drive', newDrive, {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }  // Assuming token is stored in localStorage
+      });
+      if (response.status === 200) { // Expecting status 200 from the backend
         alert('Drive added successfully!');
         // Clear form after successful submission
         setCompanyName('');
         setCtc('');
-        setJobDescription('');
+        setDriveDate('');
         setJobRole('');
-        setCgpaCutoff('');
+        setCutoff('');
+        setRequirements('');
         setError('');
       }
     } catch (err) {
@@ -70,10 +75,10 @@ const AddDriveForm = () => {
         </div>
 
         <div className="form-group">
-          <label>Job Description:</label>
+          <label>Job Description & Requirements:</label>
           <textarea
-            value={jobDescription}
-            onChange={(e) => setJobDescription(e.target.value)}
+            value={requirements}
+            onChange={(e) => setRequirements(e.target.value)}
             required
           ></textarea>
         </div>
@@ -92,11 +97,21 @@ const AddDriveForm = () => {
           <label>CGPA Cutoff:</label>
           <input
             type="number"
-            value={cgpaCutoff}
-            onChange={(e) => setCgpaCutoff(e.target.value)}
+            value={cutoff}
+            onChange={(e) => setCutoff(e.target.value)}
             required
             min="0"
             max="10"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Drive Date:</label>
+          <input
+            type="date" // Changed to type="date" for proper date selection
+            value={driveDate}
+            onChange={(e) => setDriveDate(e.target.value)}
+            required
           />
         </div>
 
