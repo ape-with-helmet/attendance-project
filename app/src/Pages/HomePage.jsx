@@ -5,9 +5,7 @@ import { Link } from 'react-router-dom';
 const Homepage = () => {
   const [companies, setCompanies] = useState([]);
   const [registeredDrives, setRegisteredDrives] = useState([]);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
-  const [registrationMessage, setRegistrationMessage] = useState('');
   
   const fetchCompanies = async () => {
     try {
@@ -21,7 +19,7 @@ const Homepage = () => {
 
       setCompanies(filteredCompanies);
     } catch (err) {
-      setError('Failed to load companies');
+      console.log('Failed to load companies');
     } finally {
       setLoading(false);
     }
@@ -36,10 +34,10 @@ const Homepage = () => {
         });
         setRegisteredDrives(response.data);
       } else {
-        setError('User not authenticated');
+        console.log('User not authenticated');
       }
     } catch (err) {
-      setError('Failed to fetch registered drives');
+      console.log('Failed to fetch registered drives');
     }
   };
   useEffect(() => {
@@ -51,7 +49,7 @@ const Homepage = () => {
   const handleRegister = async (driveId) => {
     const token = localStorage.getItem('token');
     if (!token) {
-      setError('You must be logged in to register for a drive');
+      console.log('You must be logged in to register for a drive');
       return;
     }
 
@@ -64,11 +62,10 @@ const Homepage = () => {
         }
       );
       alert(response.data.message)
-      setRegistrationMessage(response.data.message || 'Successfully registered for the drive');
       // Optionally fetch updated registered drives
       fetchRegisteredDrives();
     } catch (err) {
-      setError('Failed to register for the drive');
+      console.log('Failed to register for the drive');
     }
   };
 
