@@ -17,50 +17,62 @@ const AdminControlPage = () => {
 
   useEffect(() => {
     // Fetch student list and drive list on page load with JWT token in headers
-    axios.get('http://localhost:5000/students', {
+    axios.get('http://localhost:5000/role/students', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(response => setStudents(response.data))
       .catch(error => console.error('Error fetching students:', error));
 
-    axios.get('http://localhost:5000/drives', {
+    axios.get('http://localhost:5000/role/drives', {
       headers: { 'Authorization': `Bearer ${token}` }
     })
       .then(response => setDriveList(response.data))
       .catch(error => console.error('Error fetching drives:', error));
   }, [token]);
 
-  const handleRoleChange = async (usn) => {
+  const handleRoleChange = async (userId) => {
     try {
-      await axios.post('http://localhost:5000/admin/change-role', {
-        usn,
-        newRole: role,
-      }, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      await axios.put(
+        `http://localhost:5000/role/assign-role/${userId}`,
+        { role }, // Send role in the payload
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       alert('Role updated successfully');
     } catch (error) {
       console.error('Error updating role:', error);
+      alert('Failed to update role. Please try again.');
     }
   };
+  
 
   const handleDownloadAttendance = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/attendance/download', {
-        driveName: selectedDrive
-      }, {
-        headers: { 'Authorization': `Bearer ${token}` }
+      const response = await axios.post(
+        'http://localhost:5000/attendance/download',
+        { driveName: selectedDrive },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          responseType: 'blob', // Ensure the response is treated as binary data
+        }
+      );
+  
+      // Create a blob and download the file
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
-      // Assuming response contains the Excel file
-      const blob = new Blob([response.data], { type: 'application/vnd.ms-excel' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
       link.download = `${selectedDrive}_attendance.xlsx`;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
     } catch (error) {
       console.error('Error downloading attendance:', error);
     }
   };
+  
 
   return (
     <div className="admin-control-page">
@@ -102,7 +114,7 @@ const AdminControlPage = () => {
                     value={role}
                     onChange={(e) => setRole(e.target.value)} 
                   />
-                  <button onClick={() => handleRoleChange(student.usn)}>Change Role</button>
+                  <button onClick={() => handleRoleChange(student.id)}>Change Role</button>
                 </div>
               ))}
             </div>

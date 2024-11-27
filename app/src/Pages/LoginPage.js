@@ -11,7 +11,7 @@ const LoginPage = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:5000/login', { email, password });
+      const response = await axios.post('http://localhost:5000/auth/login', { email, password });
 
       if (response.data.status === 'success' && response.data.token) {
         // Save JWT token to localStorage
@@ -45,6 +45,9 @@ const LoginPage = () => {
         />
         <button type="submit">Login</button>
       </form>
+      <div>
+        <p>Don't have an account? <button onClick={() => history('/signup')}>Sign Up</button></p>
+      </div>
     </div>
   );
 };

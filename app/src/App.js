@@ -1,33 +1,47 @@
 import React from 'react';
-import QRCodeScanner from './Pages/QrCode'; // Import QRCodeScanner from Pages
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar'; // Import Navbar
-import HomePage from './Pages/HomePage'; // Import your HomePage component
-import LoginPage from './Pages/LoginPage'; // Import your LoginPage component
-import SignupPage from './Pages/SignupPage'; // Import your SignupPage component
-import AdminPage from './Pages/AdminPage'; // Import AdminPage component
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import QRCodeScanner from './Pages/QrCode';
+import Navbar from './components/Navbar';
+import HomePage from './Pages/HomePage';
+import LoginPage from './Pages/LoginPage';
+import SignupPage from './Pages/SignupPage';
+import AdminPage from './Pages/AdminPage';
+import { AuthProvider } from './context/AuthContext'; // Import AuthProvider
+import ProtectedRoute from './components/ProtectedRoute'; // Import the refactored ProtectedRoute
+
+const AppContent = () => {
+  const location = useLocation();
+  const hideNavbar = location.pathname === '/login' || location.pathname === '/signup';
+
+  return (
+    <>
+      {!hideNavbar && <Navbar />}
+      <Routes>
+        <Route path="/" element={<Navigate to="/home" />} />
+        
+        {/* Home route accessible by all roles */}
+        <Route path="/home" element={<HomePage />} />
+        
+        {/* Admin route accessible only by 'admin' */}
+        <Route path="/admin" element={<ProtectedRoute allowedRoles={['Admin']}><AdminPage /></ProtectedRoute>} />
+        
+        {/* Scanner route accessible only by 'student' */}
+        <Route path="/scanner" element={<ProtectedRoute allowedRoles={['Student']}><QRCodeScanner /></ProtectedRoute>} />
+        
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+      </Routes>
+    </>
+  );
+};
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <Navbar /> {/* Place Navbar at the top of all pages */}
-      <Routes>
-        {/* Define the route for Home page */}
-        <Route path='/home' element={<HomePage />} />
-        
-        {/* Define the route for Login page */}
-        <Route path='/login' element={<LoginPage />} />
-        
-        {/* Define the route for Signup page */}
-        <Route path='/signup' element={<SignupPage />} />
-        
-        {/* Define the route for Admin page */}
-        <Route path='/admin' element={<AdminPage />} />
-        
-        {/* Define the route for QR Code Scanner page */}
-        <Route path='/Scanner' element={<QRCodeScanner />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider> {/* Wrap the app with AuthProvider */}
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    </AuthProvider>
   );
 };
 

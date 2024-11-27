@@ -13,9 +13,9 @@ const SignupPage = () => {
 
   const handleSignup = async (e) => {
     e.preventDefault();
-
+    console.log("HELLOOOOO")
     try {
-      const response = await axios.post('http://localhost:5000/signup', {
+      const response = await axios.post('http://localhost:5000/auth/signup', {
         name,
         usn,
         email,
@@ -80,6 +80,9 @@ const SignupPage = () => {
         />
         <button type="submit">Signup</button>
       </form>
+      <div>
+        <p>Already have an account? <button onClick={() => history('/login')}>Login</button></p>
+      </div>
     </div>
   );
 };

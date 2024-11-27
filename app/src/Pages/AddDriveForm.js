@@ -29,7 +29,7 @@ const AddDriveForm = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:5000/add-company-drive', newDrive, {
+      const response = await axios.post('http://localhost:5000/company/add-company-drive', newDrive, {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }  // Assuming token is stored in localStorage
       });
       if (response.status === 200) { // Expecting status 200 from the backend

@@ -1,19 +1,28 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import './Navbar.css';  // You can create this file for styling the navbar
+import { Link, useNavigate } from 'react-router-dom';
+import './Navbar.css'; // Styling file
 
 const Navbar = () => {
+  const token = localStorage.getItem('token'); // Check for token in localStorage
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token'); // Remove the token from localStorage
+    navigate('/login'); // Redirect to login page
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-logo">
-        <Link to="/home">Company Drives</Link>
+        <Link to={token ? "/home" : "/login"}>Sahyadri Placements</Link>
       </div>
       <div className="navbar-links">
         <Link to="/home">Home</Link>
-        <Link to="/login">Login</Link>
-        <Link to="/signup">Signup</Link>
-        <Link to="/qr-scanner">QR Scanner</Link> {/* Link to QR Code Scanner */}
+        <Link to="/scanner">QR Scanner</Link>
         <Link to="/admin">Admin</Link>
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     </nav>
   );

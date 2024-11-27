@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db'); // Assuming your database connection is set up
-const authenticate = require('../middleware/authenticate'); // JWT middleware
-const authorize = require('../middleware/authorize'); // Role-based access control middleware
+const authenticate = require('../middlewares/authenticate'); // JWT middleware
+const authorize = require('../middlewares/authorize'); // Role-based access control middleware
 
 // Admin add company and create a drive (only if company doesn't exist)
 router.post('/add-company-drive', authenticate, authorize(['Admin']), async (req, res) => {
