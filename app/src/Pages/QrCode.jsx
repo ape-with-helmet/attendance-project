@@ -54,7 +54,7 @@ const QRCodeScanner = () => {
   return (
     <>
       <div className="qrreader_main_sector">
-        <div id="reader" style={{ width: '50%' }} />
+        <div id="reader" style={{ width: '80%' }} />
         <div className="qr_info">
           {
           scannedText && <>
