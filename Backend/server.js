@@ -5,8 +5,8 @@ const authRoutes = require('./routes/auth');
 const profileRoutes = require('./routes/profile');
 const adminRoutes = require('./routes/adminRoutes');
 const companyRoutes = require('./routes/company-registration');
-const logoutRoutes = require('./routes/logout');
 const homepageRoutes = require('./routes/homepageRoutes');
+const qrRoutes = require('./routes/qrRoute')
 
 dotenv.config();
 
@@ -26,8 +26,8 @@ app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
 app.use('/role', adminRoutes);
 app.use('/company', companyRoutes);
-app.use('/logout', logoutRoutes);
 app.use('/home', homepageRoutes);
+app.use('/qr', qrRoutes);
 
 // Set the server to listen on a given port
 app.listen(process.env.PORT || 5000, () => {
