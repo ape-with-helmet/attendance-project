@@ -11,6 +11,8 @@ import ProtectedRoute from './components/ProtectedRoute'; // Import the refactor
 import Profile from './Pages/ProfilePage';
 import ForgotPasswordPage from './Pages/ForgotPassword';  // Import ForgotPasswordPage
 import ResetPasswordPage from './Pages/ResetPassword';  // Import ResetPasswordPage
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AppContent = () => {
   const location = useLocation();
@@ -20,7 +22,6 @@ const AppContent = () => {
     <>
       {!hideNavbar && <Navbar />}
       <Routes>
-        {console.log('IN App.js')}
         {/* Home route accessible by all roles */}
         <Route path="/" element={<ProtectedRoute allowedRoles={['Student', 'Admin', 'Volunteer']}><HomePage /></ProtectedRoute>} />
         
@@ -50,6 +51,7 @@ const App = () => {
       <BrowserRouter>
         <AppContent />
       </BrowserRouter>
+      <ToastContainer/>
     </AuthProvider>
   );
 };

@@ -68,7 +68,7 @@ const Homepage = () => {
 
     try {
       const response = await axios.post(
-        'http://localhost:5000/home/register',
+        'http://localhost:5000/qr/register',
         { driveId },
         {
           headers: { Authorization: `Bearer ${token}` },

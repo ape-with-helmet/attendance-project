@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import '../StyleSheets/AddDriveForm.css';
+import { toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 const AddDriveForm = () => {
   const [companyName, setCompanyName] = useState('');
@@ -33,7 +35,7 @@ const AddDriveForm = () => {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }  // Assuming token is stored in localStorage
       });
       if (response.status === 200) { // Expecting status 200 from the backend
-        alert('Drive added successfully!');
+        toast.success('Drive added successfully!');
         // Clear form after successful submission
         setCompanyName('');
         setCtc('');

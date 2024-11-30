@@ -143,8 +143,8 @@ router.post('/forgot-password', async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: 'gmail', // You can use other services like Mailgun, SendGrid, etc.
       auth: {
-        user: 'sadhgunaithal@gmail.com', // Replace with your email
-        pass: 'pmuadrxiovvjhaok', // Replace with your email password or app-specific password
+        user: process.env.EMAIL_USER, // Your email address
+        pass: process.env.EMAIL_PASSWORD, // Replace with your email password or app-specific password
       },
     });
 

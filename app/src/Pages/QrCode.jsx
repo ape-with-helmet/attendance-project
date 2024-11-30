@@ -2,17 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Html5QrcodeScanner } from 'html5-qrcode';
 import axios from 'axios';
 import '../StyleSheets/main.css'
+import { toast, ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 const QRCodeScanner = () => {
   const [scannedText, setScannedText] = useState('');
-  const [error, setError] = useState('');
-  const [data,setData] = useState({
-    admission_no: '',
-    branch: '',
-    s_name: '',
-    section: '',
-    usn: ''
-  })
 
   const sendToBackend = async (message) => {
     try {
@@ -21,20 +15,16 @@ const QRCodeScanner = () => {
       {
         headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
       });
-      console.log('Backend Response:', response.data);
-      setData(response.data.data[0][0])
-      console.log(data)
-
+      toast.success(response.data.message);
     } catch (err) {
-      console.error('Error sending data to the backend:', err);
-      setError('err');
+      toast.error(err.response.data.message);
     }
   };
 
   useEffect(() => {
     const scanner = new Html5QrcodeScanner(
       'reader',
-      { fps: 1, qrbox: 1000 }
+      { fps: 60, qrbox: { width: 1000, height: 1000 },}
     );
 
     scanner.render(
@@ -59,33 +49,6 @@ const QRCodeScanner = () => {
     <>
       <div className="qrreader_main_sector">
         <div id="reader" style={{ width: '80%' }} />
-        <div className="qr_info">
-          {
-          scannedText && <>
-              <div className="qr_dataline">
-                <div className="holder">Admission No : </div>
-                <div className="qrdata">{data.admission_no}</div>
-              </div>
-              <div className="qr_dataline">
-                <div className="holder">Name : </div>
-                <div className="qrdata">{data.s_name}</div>
-              </div>
-              <div className="qr_dataline">
-                <div className="holder">USN : </div>
-                <div className="qrdata">{data.usn}</div>
-              </div>
-              <div className="qr_dataline">
-                <div className="holder">Branch : </div>
-                <div className="qrdata">{data.branch}</div>
-              </div>
-              <div className="qr_dataline">
-                <div className="holder">Section : </div>
-                <div className="qrdata">{data.section}</div>
-              </div>
-              </>
-          }
-        </div>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
       </div>
     </>
   );

@@ -44,36 +44,5 @@ router.get('/registered-drives', authenticate, async (req, res) => {
       res.status(500).json({ message: 'Failed to fetch registered drives' });
     }
   });
-  
-
-// Register for a drive
-router.post('/register', authenticate, async (req, res) => {
-    const { driveId } = req.body;
-    const userId = req.user.id;
-  
-    try {
-      // Check if the user is already registered for this drive
-      const [existingRegistration] = await pool.query(
-        'SELECT * FROM applied_drives WHERE user_id = ? AND drive_id = ?',
-        [userId, driveId]
-      );
-  
-      if (existingRegistration.length > 0) {
-        return res.json({ message: 'You are already registered for this drive' }).status(400);
-      }
-  
-      // Register for the drive
-      await pool.query(
-        'INSERT INTO applied_drives (user_id, drive_id) VALUES (?, ?)',
-        [userId, driveId]
-      );
-  
-      res.status(200).json({ message: 'Successfully registered for the drive' });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Failed to register for the drive' });
-    }
-  });
-  
 
 module.exports = router;
