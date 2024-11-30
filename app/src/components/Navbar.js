@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import AuthContext from '../context/AuthContext'; // Assuming you are using the AuthContext for user state
 import './Navbar.css'; // Styling file
 
 const Navbar = () => {
-  const token = localStorage.getItem('token'); // Check for token in localStorage
+  const { user } = useContext(AuthContext); // Get the current user from context
+  // console.log(user.role)
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -11,19 +13,61 @@ const Navbar = () => {
     navigate('/login'); // Redirect to login page
   };
 
+  // Role-based navigation links
+  const renderLinks = () => {
+    if (user) {
+      // console.log(user)
+      if (user.role === 'Student') {
+        // Student can only see the logout link
+        return (
+          <div className="navbar-links">
+            <Link to="/profile">Profile</Link>
+            <button className="logout-button" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+        );
+      } else if (user.role === 'Volunteer') {
+        // Volunteer sees QR Scanner and logout
+        return (
+          <div className="navbar-links">
+            <Link to="/profile">Profile</Link>
+            <Link to="/scanner">QR Scanner</Link>
+            <button className="logout-button" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+        );
+      } else if (user.role === 'Admin') {
+        // Admin sees all the links
+        return (
+          <div className="navbar-links">
+            <Link to="/">Home</Link>
+            <Link to="/profile">Profile</Link>
+            <Link to="/scanner">QR Scanner</Link>
+            <Link to="/admin">Admin</Link>
+            <button className="logout-button" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+        );
+      }
+    } else {
+      // If no user is logged in (i.e., no token), just show the login link
+      return (
+        <div className="navbar-links">
+          <Link to="/login">Login</Link>
+        </div>
+      );
+    }
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-logo">
-        <Link to={token ? "/home" : "/login"}>Sahyadri Placements</Link>
+        <Link to={user ? "/" : "/login"}>Sahyadri Placements</Link>
       </div>
-      <div className="navbar-links">
-        <Link to="/home">Home</Link>
-        <Link to="/scanner">QR Scanner</Link>
-        <Link to="/admin">Admin</Link>
-        <button className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
-      </div>
+      {renderLinks()} {/* Render links based on the user role */}
     </nav>
   );
 };

@@ -16,7 +16,11 @@ const QRCodeScanner = () => {
 
   const sendToBackend = async (message) => {
     try {
-      const response = await axios.post("http://localhost:5000/mark-attendance", { data: message });
+      const response = await axios.post("http://localhost:5000/qr/mark-attendance", 
+      { data:message },
+      {
+        headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+      });
       console.log('Backend Response:', response.data);
       setData(response.data.data[0][0])
       console.log(data)

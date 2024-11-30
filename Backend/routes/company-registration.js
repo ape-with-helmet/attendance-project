@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const pool = require('../db'); // Assuming your database connection is set up
+const pool = require('../models/db');  // Assuming your database connection is set up
 const authenticate = require('../middlewares/authenticate'); // JWT middleware
 const authorize = require('../middlewares/authorize'); // Role-based access control middleware
 

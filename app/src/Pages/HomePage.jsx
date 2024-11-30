@@ -1,12 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import '../StyleSheets/homepage.css'
 
 const Homepage = () => {
   const [companies, setCompanies] = useState([]);
   const [registeredDrives, setRegisteredDrives] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+  const [selectedDrive, setSelectedDrive] = useState(null); // Track selected drive for the modal
+  const [showModal, setShowModal] = useState(false); // Track modal visibility
+
+  const openModal = (drive) => {
+    setSelectedDrive(drive);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setSelectedDrive(null);
+    setShowModal(false);
+  };
+  console.log('Entered the Home page section')
   const fetchCompanies = async () => {
     try {
       const response = await axios.get('http://localhost:5000/home/companies');
@@ -15,7 +28,7 @@ const Homepage = () => {
       const filteredCompanies = response.data;
       
       filteredCompanies.sort((a, b) => new Date(a.driveDate) - new Date(b.driveDate)); // Sort by date
-      console.log(companies)
+      console.log("Compani",companies)
 
       setCompanies(filteredCompanies);
     } catch (err) {
@@ -84,11 +97,7 @@ const Homepage = () => {
                 <div key={company.company_id} className="company-card">
                   <h4>{company.company_name}</h4>
                   <p>Drive Date: {new Date(company.drive_date).toLocaleDateString()}</p>
-                  <p>Job Role: {company.job_role}</p>
-                  <p>CTC: {company.ctc}LPA</p>
-                  <p>Requirements: {company.requirements}</p>
-                  <p>Cut off: {company.cutoff}</p>
-                  <button onClick={() => handleRegister(company.id)}>Register for this Drive</button>
+                  <button onClick={() => openModal(company)}>Know More</button>
                 </div>
               ))
             ) : (
@@ -115,6 +124,24 @@ const Homepage = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal */}
+      {showModal && selectedDrive && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3>{selectedDrive.company_name}</h3>
+            <p>Drive Date: {new Date(selectedDrive.drive_date).toLocaleDateString()}</p>
+            <p>Job Role: {selectedDrive.job_role}</p>
+            <p>CTC: {selectedDrive.ctc}LPA</p>
+            <p>Requirements: {selectedDrive.requirements}</p>
+            <p>Cut off: {selectedDrive.cutoff}</p>
+            <button onClick={() => handleRegister(selectedDrive.company_id)}>
+              Register for this Drive
+            </button>
+            <button onClick={closeModal}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
