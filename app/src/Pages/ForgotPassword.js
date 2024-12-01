@@ -1,41 +1,49 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import "react-toastify/dist/ReactToastify.css";
+import {toast} from 'react-toastify'
+import '../StyleSheets/main.css'
+import Introduction from '../components/Introduction';
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!email){
+      return toast.warn("Enter email!")
+    }
     try {
+
       const response = await axios.post('http://localhost:5000/auth/forgot-password', { email });
-      setMessage(response.data.message);
+      toast(response.data.message);
     } catch (err) {
-      alert(err.response.data.message);
+      toast.error(err.response.data.message);
     }
   };
 
   return (
-    <div>
-      <h1>Forgot Password</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Email:</label>
+    <div className='reset_container'>
+      <Introduction/>
+      <div className='reset_content'>
+        <h1>Forgot Password</h1>
+        <form onSubmit={handleSubmit} className='reset_form'>
           <input
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required
+            // required
+            placeholder='Email ID'
+            className='reset_input'
           />
+          <button type="submit" className='reset_button'>Send Reset Link</button>
+        </form>
+        <div>
+          <button onClick={()=>navigate('/login')} className='redirect_link'>Login Instead?</button>
         </div>
-        {error && <div style={{ color: 'red' }}>{error}</div>}
-        {message && <div style={{ color: 'green' }}>{message}</div>}
-        <button type="submit">Send Reset Link</button>
-      </form>
-    <button onClick={()=>navigate('/login')}>Login Instead?</button>
+      </div>
     </div>
   );
 };

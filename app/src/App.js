@@ -13,6 +13,7 @@ import ForgotPasswordPage from './Pages/ForgotPassword';  // Import ForgotPasswo
 import ResetPasswordPage from './Pages/ResetPassword';  // Import ResetPasswordPage
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './App.css'
 
 const AppContent = () => {
   const location = useLocation();
@@ -51,7 +52,18 @@ const App = () => {
       <BrowserRouter>
         <AppContent />
       </BrowserRouter>
-      <ToastContainer/>
+      <ToastContainer
+        position="bottom-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        />
     </AuthProvider>
   );
 };

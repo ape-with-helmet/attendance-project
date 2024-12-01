@@ -39,7 +39,7 @@ router.get('/students', authenticate, authorize(['Admin']), async (req, res) => 
 // Get the list of drives (only accessible by admins)
 router.get('/drives', authenticate, authorize(['Admin']), async (req, res) => {
   try {
-    const [drives] = await pool.query('SELECT * FROM drives'); // Assuming you have a 'drives' table
+    const [drives] = await pool.query('SELECT d.id, c.name, d.drive_date FROM drives d, companies c where d.company_id = c.id'); // Assuming you have a 'drives' table
     res.json(drives);
   } catch (err) {
     console.error(err);
@@ -48,29 +48,15 @@ router.get('/drives', authenticate, authorize(['Admin']), async (req, res) => {
 });
 
 router.post('/attendance/download', authenticate, authorize(['Admin']), async (req, res) => {
-  const { driveName } = req.body;
-
-  if (!driveName) {
-    return res.status(400).json({ status: 'error', message: 'Drive name is required' });
+  const { driveId, driveName } = req.body;
+  if (!driveId) {
+    return res.status(400).json({ status: 'error', message: 'Drive id is required' });
   }
-
   try {
-    // Fetch drive ID and associated data
-    const [driveData] = await pool.query(
-      `SELECT id FROM drives WHERE companyName = ?`,
-      [driveName]
-    );
-
-    if (driveData.length === 0) {
-      return res.status(404).json({ status: 'error', message: 'Drive not found' });
-    }
-
-    const driveId = driveData[0].id;
-
     // Fetch student data for the drive
     const [attendanceData] = await pool.query(
       `SELECT 
-        u.name, u.email, u.phone_number, u.usn, u.cgpa, u.branch, 
+        u.name, u.email, u.phone_number, u.usn, u.cgpa, 
         ad.attendance
       FROM applied_drives ad
       INNER JOIN users u ON ad.user_id = u.id
@@ -93,7 +79,6 @@ router.post('/attendance/download', authenticate, authorize(['Admin']), async (r
       { header: 'Phone', key: 'phone_number', width: 15 },
       { header: 'USN', key: 'usn', width: 15 },
       { header: 'CGPA', key: 'cgpa', width: 10 },
-      { header: 'Branch', key: 'branch', width: 15 },
       { header: 'Attendance', key: 'attendance', width: 15 }
     ];
 
@@ -101,12 +86,6 @@ router.post('/attendance/download', authenticate, authorize(['Admin']), async (r
     attendanceData.forEach((record) => {
       worksheet.addRow(record);
     });
-
-    // Set response headers for file download
-    res.setHeader(
-      'Content-Disposition',
-      `attachment; filename="${driveName}_attendance.xlsx"`
-    );
     res.setHeader(
       'Content-Type',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -114,7 +93,7 @@ router.post('/attendance/download', authenticate, authorize(['Admin']), async (r
 
     // Write the workbook to the response
     await workbook.xlsx.write(res);
-    res.end();
+    res.end(); // Allow the file to finish sending before ending the response
   } catch (err) {
     console.error('Error generating Excel:', err);
     res.status(500).json({ status: 'error', message: 'Server error' });

@@ -1,7 +1,9 @@
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext'; // Assuming you are using the AuthContext for user state
-import './Navbar.css'; // Styling file
+import '../StyleSheets/Navbar.css'; // Styling file
+import "react-toastify/dist/ReactToastify.css";
+import {toast} from 'react-toastify'
 
 const Navbar = () => {
   const { user } = useContext(AuthContext); // Get the current user from context
@@ -10,6 +12,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token'); // Remove the token from localStorage
+    toast("Logged Out");
     navigate('/login'); // Redirect to login page
   };
 
@@ -42,7 +45,6 @@ const Navbar = () => {
         // Admin sees all the links
         return (
           <div className="navbar-links">
-            <Link to="/">Home</Link>
             <Link to="/profile">Profile</Link>
             <Link to="/scanner">QR Scanner</Link>
             <Link to="/admin">Admin</Link>

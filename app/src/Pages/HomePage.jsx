@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import '../StyleSheets/homepage.css'
+import { toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 const Homepage = () => {
   const [companies, setCompanies] = useState([]);
@@ -19,25 +21,39 @@ const Homepage = () => {
     setSelectedDrive(null);
     setShowModal(false);
   };
-  console.log('Entered the Home page section')
+
+  console.log('Entered the Home page section');
+
   const fetchCompanies = async () => {
+    const loadingToast = toast.loading('Loading companies and upcoming drives...'); // Show loading toast
+
     try {
       const response = await axios.get('http://localhost:5000/home/companies');
       const today = new Date();
       // Filter out past drives and sort by upcoming dates
       const filteredCompanies = response.data;
-      
+
       filteredCompanies.sort((a, b) => new Date(a.driveDate) - new Date(b.driveDate)); // Sort by date
-      console.log("Compani",companies)
+      console.log('Companies', companies);
 
       setCompanies(filteredCompanies);
+      toast.update(loadingToast, {
+        render: 'Companies loaded successfully!',
+        type: 'success',
+        isLoading: false,
+        autoClose: 3000,
+      }); // Update toast with success message
     } catch (err) {
-      console.log('Failed to load companies');
+      toast.update(loadingToast, {
+        render: 'Failed to load companies',
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000,
+      }); // Update toast with error message
     } finally {
       setLoading(false);
     }
   };
-
   const fetchRegisteredDrives = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -47,10 +63,10 @@ const Homepage = () => {
         });
         setRegisteredDrives(response.data);
       } else {
-        console.log('User not authenticated');
+        toast.error('User not authenticated');
       }
     } catch (err) {
-      console.log('Failed to fetch registered drives');
+      toast.error('Failed to fetch registered drives');
     }
   };
   useEffect(() => {
@@ -62,7 +78,7 @@ const Homepage = () => {
   const handleRegister = async (driveId) => {
     const token = localStorage.getItem('token');
     if (!token) {
-      console.log('You must be logged in to register for a drive');
+      toast.info('You must be logged in to register for a drive');
       return;
     }
 
@@ -74,11 +90,11 @@ const Homepage = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      alert(response.data.message)
+      toast.success(response.data.message)
       // Optionally fetch updated registered drives
       fetchRegisteredDrives();
     } catch (err) {
-      console.log('Failed to register for the drive');
+      toast.error('Failed to register for the drive');
     }
   };
 

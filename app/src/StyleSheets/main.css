@@ -41,3 +41,115 @@
 .qr_dataline .qrdata{
     font-weight: 300;
 }
+
+.reset_container{
+    background-image: url('../resources/sahyadri_cover.jpeg');
+    background-size: cover;
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+    justify-content: space-evenly;
+    align-items: center;
+    /* padding: 10%; */
+    font-family: Poppins;
+    /* background-color: #33467c; */
+}
+
+.reset_content{
+    display: flex;
+    flex-direction: column;
+    padding: 5%;
+    gap: 1vh;
+    border-radius: 20px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: left;
+    width: 25%;
+    color: black;
+    background-color: hsla(0, 0%, 90%, 0.8);
+}
+
+.reset_form{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 1vh;
+}
+
+.reset_input{
+    /* height: 5vh; */
+    border: rgba(128, 128, 128, 0.219) 1px solid;
+    border-radius: 10px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) inset, 0 4px 8px rgba(0, 0, 0, 0.4) inset;
+    padding: 2vh;
+    font-size: 20px;
+    /* transition: all 0.6s ease; */
+}
+.reset_input:focus{
+    border: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) inset, 0 8px 16px rgba(0, 0, 0, 0.4) inset;
+    outline-color: black;
+}
+.reset_content h1{
+    font-weight: 600;
+    text-shadow: rgba(0, 0, 0, 0.4) 2px 2px 2px;
+}
+
+.reset_button{
+    border: none;
+    border-radius: 10px;
+    padding: 1vh;
+    background-color: #007bff;
+    font-size: 20px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) inset, 0 4px 8px rgba(0, 0, 0, 0.4) inset;
+    outline-color: black;
+    cursor: pointer;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 8px rgba(0, 0, 0, 0.4);
+    color: white;
+    /* transition: all 0.6s ease; */
+}
+.reset_button:hover{
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) inset, 0 8px 16px rgba(0, 0, 0, 0.4) inset;
+}
+
+.reset_button:focus{
+    background-color: #898bff;
+}
+
+.redirect_link{
+    border: none;
+    background-color: transparent;
+    color: black;
+    font-size: 17px;
+    font-family: Poppins;
+    cursor: pointer;
+}
+.redirect_link:hover{
+    text-decoration: underline;
+}
+
+.intro_container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: top;
+    border-radius: 20px;
+    padding: 5%;
+    /* height: 35vh; */
+    width: 25%;
+    background-color: hsla(0, 0%, 90%, 0.8);
+}
+
+.intro_container img{
+    width: 50%;
+    filter: drop-shadow(0px 0px 4px rgba(0, 0, 0));
+}
+
+.intro_container h1{
+    font-weight: 600;
+    font-size: 30px;
+}
+.intro_container p{
+    text-align: justify;
+}

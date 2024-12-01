@@ -113,8 +113,6 @@ router.put('/change-password', async (req, res) => {
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
-// Assuming you're using a pool for database queries
-
 // /forgot-password route: Send the password reset link
 router.post('/forgot-password', async (req, res) => {
   const { email } = req.body;
@@ -150,10 +148,26 @@ router.post('/forgot-password', async (req, res) => {
 
     const resetUrl = `http://localhost:3000/reset-password?token=${resetToken}`;
 
+    // HTML content for the email
+    const htmlContent = `
+      <html>
+        <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+            <h2 style="color: #333333;">Password Reset Request</h2>
+            <p style="color: #555555; font-size: 16px;">Hi there,</p>
+            <p style="color: #555555; font-size: 16px;">You requested to reset your password. Please click the button below to reset your password.</p>
+            <a href="${resetUrl}" style="display: inline-block; background-color: #007bff; color: white; padding: 12px 20px; text-decoration: none; font-size: 16px; border-radius: 5px; text-align: center;">Reset Your Password</a>
+            <p style="color: #555555; font-size: 14px; margin-top: 20px;">If you didn't request a password reset, you can ignore this email.</p>
+            <p style="color: #555555; font-size: 12px;">This link will expire in 1 hour.</p>
+          </div>
+        </body>
+      </html>
+    `;
+
     await transporter.sendMail({
       to: email,
       subject: 'Password Reset',
-      text: `You requested a password reset. Click the following link to reset your password: ${resetUrl}`,
+      html:htmlContent,
     });
 
     return res.json({ message: 'Password reset email sent' });

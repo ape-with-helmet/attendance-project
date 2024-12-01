@@ -1,0 +1,41 @@
+.popup{
+    display: flex;
+    flex-direction: column;
+}
+
+.section{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 30vw;
+    /* background-color: grey; */
+    /* padding: 2%; */
+}
+.section img{
+    
+}
+.admin-control-page{
+    display: flex;
+    /* width: 100%; */
+    flex-direction: row;
+    justify-content: center;
+    /* gap: 5%; */
+    align-items: space-around;
+    /* background-color: #d60000; */
+    /* padding:2%; */
+}
+.admin-control-container{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+}
+.admin-control-container h1{
+    display: block;
+    position: absolute;
+    left: 41.5vw;
+    right: 41.5vw;
+    /* color: red; */
+}

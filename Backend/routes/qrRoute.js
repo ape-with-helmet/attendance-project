@@ -82,38 +82,50 @@ router.post('/register', authenticate, async (req, res) => {
       },
     });
 
-    // // Email details
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: userData.email, // Send to the authenticated user's email
       subject: 'Confirmation of Your Drive Registration',
       html: `
-        <p>Dear ${userData.user_name},</p>
-        
-        <p>We are pleased to inform you that you have successfully registered for the upcoming recruitment drive hosted by <strong>${userData.company_name}</strong>.</p>
-        
-        <p>Here are the details of the drive:</p>
-        
-        <ul>
-          <li><strong>Company Name:</strong> ${userData.company_name}</li>
-          <li><strong>Drive Date:</strong> ${userData.drive_date}</li>
-        </ul>
-        
-        <p>Please find your unique QR code attached to this email. This QR code will be used by the volunteer team to mark your attendance during the drive. We kindly request you to have it ready for quick scanning and processing.</p>
-        
-        <p>If you have any questions or need further assistance, please do not hesitate to reach out.</p>
-        
-        <p>Best regards,<br>
-        Placement Team<br>
-        Sahyadri College of Engineering and Management</p>
+        <html>
+          <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+            <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+              <h2 style="color: #333333; text-align: center;">Drive Registration Confirmation</h2>
+              <p style="color: #555555; font-size: 16px;">Dear <strong>${userData.user_name}</strong>,</p>
+              
+              <p style="color: #555555; font-size: 16px;">We are delighted to confirm your successful registration for the upcoming recruitment drive hosted by <strong>${userData.company_name}</strong>.</p>
+              
+              <h3 style="color: #333333; margin-bottom: 10px;">Drive Details</h3>
+              <ul style="color: #555555; font-size: 16px; line-height: 1.5;">
+                <li><strong>Company Name:</strong> ${userData.company_name}</li>
+                <li><strong>Drive Date:</strong> ${userData.drive_date}</li>
+              </ul>
+              
+              <p style="color: #555555; font-size: 16px;">Below is your unique QR code. Please keep it accessible during the event for attendance marking.</p>
+              <div style="text-align: center; margin: 20px 0;">
+                <img src="cid:qrCodeImage" alt="QR Code" style="max-width: 200px; height: auto;"/>
+              </div>
+              
+              <p style="color: #555555; font-size: 16px;">If you have any questions or require assistance, feel free to contact us at <a href="mailto:support@sahyadri.com" style="color: #007bff;">support@sahyadri.com</a>.</p>
+              
+              <p style="color: #555555; font-size: 16px;">We look forward to seeing you at the drive!</p>
+              
+              <p style="color: #555555; font-size: 16px;">Best regards,</p>
+              <p style="color: #555555; font-size: 16px; margin-top: 5px;">Placement Team<br>Sahyadri College of Engineering and Management</p>
+            </div>
+          </body>
+        </html>
       `,
       attachments: [
         {
-          filename: `${userData.company_name}-qr-code.png`,
-          content: qrCodeBuffer, // Attach QR code as a PNG file
+          filename: 'qr-code.png', // Name of the file
+          content: qrCodeBuffer,   // QR code image buffer
+          cid: 'qrCodeImage'       // Content ID to embed the image
         },
       ],
     };
+    
+    
     
     // Send the email
     await transporter.sendMail(mailOptions);

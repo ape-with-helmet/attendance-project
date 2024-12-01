@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
+import {toast} from 'react-toastify'
+import Introduction from "../components/Introduction";
+import '../StyleSheets/main.css'
 
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const location = useLocation();
   const history = useNavigate();
 
@@ -16,7 +18,8 @@ const ResetPassword = () => {
   useEffect(() => {
     // Check if the token exists in the URL
     if (!token) {
-      setError("Invalid or expired link.");
+      toast.error("Invalid or expired link.");
+      window.location.href = '/'
     }
   }, [token]);
 
@@ -26,6 +29,9 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (newPassword) {
+      return toast.warn('Enter the new password')
+    }
     try {
       // Send the reset request to backend
       const response = await axios.post("http://localhost:5000/auth/reset-password", {
@@ -33,34 +39,33 @@ const ResetPassword = () => {
         newPassword,
       });
       console.log(response)
-      setSuccess("Your password has been reset successfully!");
+      toast.success("Password Reset successfully!");
       history("/login"); // Redirect user to login page after success
     } catch (err) {
-      alert(err.response.data.message)
-      setError("Failed to reset password. Please try again.");
+      toast.error(err.response.data.message);
     }
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "0 auto", padding: "20px" }}>
-      <h1>Reset Your Password</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      {success && <p style={{ color: "green" }}>{success}</p>}
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "10px" }}>
-          <label>
-            New Password:
+    <>
+      <div className="reset_container">
+        <Introduction/>
+        <div className="reset_content">
+          <h1>Reset Your Password</h1>
+          <form onSubmit={handleSubmit} className="reset_form">
             <input
               type="password"
               value={newPassword}
               onChange={handlePasswordChange}
               required
+              placeholder="New Password"
+              className="reset_input"
             />
-          </label>
+            <button type="submit" className="reset_button">Reset Password</button>
+          </form>
         </div>
-        <button type="submit">Reset Password</button>
-      </form>
-    </div>
+      </div>
+    </>
   );
 };
 
