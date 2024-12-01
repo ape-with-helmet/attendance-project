@@ -9,11 +9,19 @@ router.post('/add-company-drive', authenticate, authorize(['Admin']), async (req
   const { companyName, ctc, jobRole, cutoff, driveDate, requirements } = req.body;
 
   try {
+    // Trim any leading or trailing white spaces from input values
+    const trimmedCompanyName = companyName.trim();
+    const trimmedCtc = ctc.trim();
+    const trimmedJobRole = jobRole.trim();
+    const trimmedCutoff = cutoff.trim();
+    const trimmedDriveDate = driveDate.trim();
+    const trimmedRequirements = requirements.trim();
+
     // Start a transaction to ensure atomicity
     await pool.query('START TRANSACTION');
 
     // Check if the company already exists
-    const [companyRows] = await pool.query('SELECT * FROM companies WHERE name = ?', [companyName]);
+    const [companyRows] = await pool.query('SELECT * FROM companies WHERE name = ?', [trimmedCompanyName]);
 
     let companyId;
 
@@ -22,14 +30,14 @@ router.post('/add-company-drive', authenticate, authorize(['Admin']), async (req
       companyId = companyRows[0].id;
     } else {
       // Company does not exist, create a new company
-      const [companyResult] = await pool.query('INSERT INTO companies (name) VALUES (?)', [companyName]);
+      const [companyResult] = await pool.query('INSERT INTO companies (name) VALUES (?)', [trimmedCompanyName]);
       companyId = companyResult.insertId; // Get the inserted company's ID
     }
 
     // Insert the drive associated with the company
     await pool.query(
       'INSERT INTO drives (company_id, job_role, ctc, cutoff, drive_date, requirements) VALUES (?, ?, ?, ?, ?, ?)',
-      [companyId, jobRole, ctc, cutoff, driveDate, requirements]
+      [companyId, trimmedJobRole, trimmedCtc, trimmedCutoff, trimmedDriveDate, trimmedRequirements]
     );
 
     // Commit the transaction
@@ -43,5 +51,6 @@ router.post('/add-company-drive', authenticate, authorize(['Admin']), async (req
     res.status(500).json({ status: 'error', message: 'Server error' });
   }
 });
+
 
 module.exports = router;

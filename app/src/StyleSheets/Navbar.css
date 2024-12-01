@@ -1,57 +1,101 @@
-@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+/* Navbar Styling */
 .navbar {
-    display: flex;
-    font-family: Poppins;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #000000be;
-    padding: 1rem 2rem;
+  display: flex;
+  font-family: Poppins;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #000000be;
+  padding: 1rem 2rem;
+  position: relative; /* to position the toggle button */
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.navbar-logo a {
+  color: #fff;
+  text-decoration: none;
+  filter: drop-shadow(2px 2px 2px black);
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.navbar-logo a:hover {
+  filter: drop-shadow(5px 5px 5px black);
+  letter-spacing: 1px;
+}
+
+.navbar-links {
+  display: flex;
+  flex-direction: row;
+  width: 60%;
+  align-items: center;
+  justify-content: end;
+  gap: 3vw;
+}
+
+.navbar-links a, .logout-button {
+  color: #fff;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.navbar-links a:hover, .logout-button:hover {
+  filter: drop-shadow(2px 2px 5px rgb(0, 0, 0));
+  letter-spacing: 1px;
+}
+.navbar-dos{
+  display: flex;
+  width: 60%;
+  justify-content: right;
+}
+.logout-button {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.logout-button:focus {
+  outline: none;
+}
+
+.navbar-toggle-button {
+  display: none;
+}
+
+/* Mobile Styling */
+@media (max-width: 768px) {
+  .navbar-dos {
+    display: flex; /* Hide the links initially */
+    flex-direction: column;
+    /* gap: 1rem; */
+    position: absolute;
+    top: 7vh;
+    right: 0;
+    background-color: #444444;
+    width: 100%;
+    padding-bottom: 3vh;
+    padding-top: 2vh;
   }
-  
-  .navbar-logo a {
-    color: #fff;
-    text-decoration: none;
-    filter: drop-shadow(2px 2px 2px black);
-    font-size: 30px;
-    font-weight: 500;
+  .navbar-links{
+    flex-direction: column;
+    width: 100%;
+  }
+  .navbar-dos.hide {
+    display: none; /* Show the links when toggled */
   }
 
-  .navbar-logo a:hover{
-    filter: drop-shadow(5px 5px 5px black);
-    letter-spacing: 1px;
-  }
-  
-  .navbar-links{
-    display: flex;
-    /* padding: 1%; */
-    flex-direction: row;
-    width: 50%;
-    align-items: center;
-    justify-content: end;
-    gap: 3vw;
-    /* border-left-color: #963b3b; */
-  }
-  .navbar-links a, .logout-button {
-    color: #fff;
-    /* margin: 0 0.5rem; */
-    text-decoration: none;
-    font-size: 20px;
-  }
-  
-  .navbar-links a:hover, .logout-button:hover {
-    filter: drop-shadow(2px 2px 5px rgb(0, 0, 0));
-    letter-spacing: 1px;
-  }
-  
-  .logout-button {
+  .navbar-toggle-button {
+    display: block;
     background: none;
     border: none;
     color: #fff;
+    font-size: 30px;
     cursor: pointer;
   }
-  
-  .logout-button:focus {
-    outline: none;
+
+  .navbar-logo a {
+    font-size: 20px;
   }
-  
+}

@@ -1,41 +1,189 @@
-.popup{
+/* Admin Control Page Styling */
+.admin-control-container {
     display: flex;
     flex-direction: column;
+    /* width: 100vw; */
+    padding: 5%;
+    font-family: Poppins;
+}
+.admin-control-container::before{
+    content: '';
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    position: fixed;
+    z-index: -1000;
+    background-image: url('../resources/sahyadri_cover.jpeg');
+    filter: grayscale(60%) brightness(50%);
+    background-size: cover;
+}
+.admin-control-container h1 {
+    text-align: center;
+    color: #ffffff;
+    font-size: 2.5rem;
+    margin-top: 20px;
 }
 
-.section{
+.admin-control-page {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    gap: 2rem;
+    padding: 2rem;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    width: 30vw;
-    /* background-color: grey; */
-    /* padding: 2%; */
 }
-.section img{
-    
-}
-.admin-control-page{
-    display: flex;
-    /* width: 100%; */
-    flex-direction: row;
-    justify-content: center;
-    /* gap: 5%; */
-    align-items: space-around;
-    /* background-color: #d60000; */
-    /* padding:2%; */
-}
-.admin-control-container{
+
+.section {
+    background-color: #ffffffa6;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 20vw;
+    max-width: 25vw;
+    text-align: center;
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    width: 100vw;
+    padding: 1.5rem;
+    height: 40vh;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.admin-control-container h1{
-    display: block;
+
+.section:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+.section:hover .rolling_part{
+    transform: translateY(-17vh);
+    opacity: 1;
+}
+.section:hover img{
+    opacity: 0.2;
+}
+
+.section img {
+    width: 100%;
+    height: 100%;
+    margin-bottom: 1rem;
+    transform: translateY(3vh);
+    filter: drop-shadow(6px 5px 5px black);
+}
+
+.rolling_part{
+    left: 28%;
+    transform: translateY(0vh);
+    opacity: 0;
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.section button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 0.8rem 1.2rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.section button:hover {
+    background-color: #0056b3;
+}
+
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup .popup-content {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 90%;
+    position: relative;
+    max-width: 500px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.popup .close-btn {
+    background-color: #dc3545;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
     position: absolute;
-    left: 41.5vw;
-    right: 41.5vw;
-    /* color: red; */
+    top: 15px;
+    right: 15px;
+}
+
+.popup .close-btn:hover {
+    background-color: #b02a37;
+}
+
+.search-bar input {
+    width: 80%;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+.student-list {
+    max-height: 200px;
+    overflow-y: auto;
+    text-align: left;
+}
+
+.student-item {
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.student-item:hover {
+    background-color: #f0f8ff;
+}
+
+.dropdown select {
+    width: 80%;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+.dropdown button {
+    margin-top: 1rem;
+}
+@media (max-width:700px) {
+    .admin-control-page{
+        flex-direction: column;
+    }
+    .admin-control-container h1 {
+        font-size: 20px;
+        margin-top: 0px;
+    }
+    .section{
+        width: 40vw;
+        margin-top: -10px;
+        max-width: 80vw;
+        height: 20vh;
+    }
 }

@@ -1,0 +1,28 @@
+.add-drive-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.form-group{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.form-group input{
+    height: 2vh;
+    padding: 1vh;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) inset, 0 4px 8px rgba(0, 0, 0, 0.4) inset;
+    font-size: 15px;
+}
+
+.form-group textarea{
+    height: 10vh;
+    padding: 1vh;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) inset, 0 4px 8px rgba(0, 0, 0, 0.4) inset;
+    font-size: 15px;
+}

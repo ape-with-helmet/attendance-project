@@ -49,6 +49,7 @@ router.get('/drives', authenticate, authorize(['Admin']), async (req, res) => {
 
 router.post('/attendance/download', authenticate, authorize(['Admin']), async (req, res) => {
   const { driveId, driveName } = req.body;
+  console.log("first")
   if (!driveId) {
     return res.status(400).json({ status: 'error', message: 'Drive id is required' });
   }
@@ -63,7 +64,7 @@ router.post('/attendance/download', authenticate, authorize(['Admin']), async (r
       WHERE ad.drive_id = ?`,
       [driveId]
     );
-
+    console.log(attendanceData)
     if (attendanceData.length === 0) {
       return res.status(404).json({ status: 'error', message: 'No data found for the selected drive' });
     }

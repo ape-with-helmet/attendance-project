@@ -17,6 +17,7 @@ router.get('/companies', async (req, res) => {
          ORDER BY drive_date ASC`,
         [moment().format('YYYY-MM-DD')]
       );
+      // console.log(drives)
       res.json(drives);
     } catch (err) {
       console.error(err);
@@ -27,22 +28,24 @@ router.get('/companies', async (req, res) => {
 
 // Fetch registered drives for the authenticated user
 router.get('/registered-drives', authenticate, async (req, res) => {
-    try {
-      // SQL query to fetch registered drives with company name for the authenticated user
-      const [registeredDrives] = await pool.query(
-        `SELECT ad.*, d.*, c.name AS company_name
-         FROM applied_drives ad
-         INNER JOIN drives d ON ad.drive_id = d.id
-         INNER JOIN companies c ON d.company_id = c.id
-         WHERE ad.user_id = ?`,
-        [req.user.id]
-      );
-  
-      res.json(registeredDrives);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: 'Failed to fetch registered drives' });
-    }
-  });
+  try {
+    // SQL query to fetch registered drives with company name and job role for the authenticated user
+    const [registeredDrives] = await pool.query(
+      `SELECT ad.*, d.*, c.name AS company_name, d.job_role
+       FROM applied_drives ad
+       INNER JOIN drives d ON ad.drive_id = d.id
+       INNER JOIN companies c ON d.company_id = c.id
+       WHERE ad.user_id = ? AND d.drive_date >= ?
+       ORDER BY d.drive_date ASC`,
+      [req.user.id, moment().format('YYYY-MM-DD')]
+    );
+
+    res.json(registeredDrives);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to fetch registered drives' });
+  }
+});
+
 
 module.exports = router;

@@ -9,20 +9,22 @@ const Homepage = () => {
   const [companies, setCompanies] = useState([]);
   const [registeredDrives, setRegisteredDrives] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [onlyInfoBool, setOnlyInfoBool] = useState(null)
+  const [isRegistering,setIsRegistering] = useState(false)
   const [selectedDrive, setSelectedDrive] = useState(null); // Track selected drive for the modal
   const [showModal, setShowModal] = useState(false); // Track modal visibility
 
-  const openModal = (drive) => {
+  const openModal = (drive,val) => {
+    setOnlyInfoBool(val)
     setSelectedDrive(drive);
     setShowModal(true);
   };
 
   const closeModal = () => {
     setSelectedDrive(null);
+    setOnlyInfoBool(null);
     setShowModal(false);
   };
-
-  console.log('Entered the Home page section');
 
   const fetchCompanies = async () => {
     const loadingToast = toast.loading('Loading companies and upcoming drives...'); // Show loading toast
@@ -32,9 +34,10 @@ const Homepage = () => {
       const today = new Date();
       // Filter out past drives and sort by upcoming dates
       const filteredCompanies = response.data;
+      console.log(filteredCompanies)
 
       filteredCompanies.sort((a, b) => new Date(a.driveDate) - new Date(b.driveDate)); // Sort by date
-      console.log('Companies', companies);
+      // console.log('Companies', companies);
 
       setCompanies(filteredCompanies);
       toast.update(loadingToast, {
@@ -61,7 +64,9 @@ const Homepage = () => {
         const response = await axios.get('http://localhost:5000/home/registered-drives', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setRegisteredDrives(response.data);
+        const filteredDrives = response.data
+        filteredDrives.sort((a, b) => new Date(a.driveDate) - new Date(b.driveDate)); // Sort by date
+        setRegisteredDrives(filteredDrives);
       } else {
         toast.error('User not authenticated');
       }
@@ -76,12 +81,14 @@ const Homepage = () => {
 
   // Handle registration for a drive
   const handleRegister = async (driveId) => {
+    // console.log(driveId)
     const token = localStorage.getItem('token');
     if (!token) {
       toast.info('You must be logged in to register for a drive');
       return;
     }
-
+    setIsRegistering(true)
+    const loadingRegisterToast = toast.loading("Registration in Process...")
     try {
       const response = await axios.post(
         'http://localhost:5000/qr/register',
@@ -90,30 +97,40 @@ const Homepage = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-      toast.success(response.data.message)
+      toast.update(loadingRegisterToast, {
+        render: response.data.message,
+        type: 'success',
+        isLoading: false,
+        autoClose: 3000,
+      });
+      setIsRegistering(false)
       // Optionally fetch updated registered drives
       fetchRegisteredDrives();
     } catch (err) {
-      toast.error('Failed to register for the drive');
+      console.log(err.response.data.message)
+      toast.update(loadingRegisterToast, {
+        render: err.response.data.message,
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000,
+      });
+      setIsRegistering(false)
     }
   };
 
-  if (loading) return <p>Loading drives...</p>;
-
   return (
     <div className="homepage">
-      <h2>Upcoming Drives</h2>
       <div className="company-list">
+        <h2>Upcoming Drives</h2>
         {/* Row 1: Upcoming Drives */}
         <div className="drive-section">
-          <h3>Upcoming Drives</h3>
-          <div className="company-cards">
+          <div className="company-cards horizontal-scroll">
             {companies.length > 0 ? (
               companies.map((company) => (
-                <div key={company.company_id} className="company-card">
+                <div key={company.id} className="company-card" onClick={() => openModal(company,false)}>
                   <h4>{company.company_name}</h4>
+                  <p>Role: {company.job_role}</p>
                   <p>Drive Date: {new Date(company.drive_date).toLocaleDateString()}</p>
-                  <button onClick={() => openModal(company)}>Know More</button>
                 </div>
               ))
             ) : (
@@ -123,15 +140,15 @@ const Homepage = () => {
         </div>
 
         {/* Row 2: Registered Drives */}
+        <h2>My Registered Drives</h2>
         <div className="drive-section">
-          <h3>My Registered Drives</h3>
           <div className="company-cards">
             {registeredDrives.length > 0 ? (
               registeredDrives.map((drive) => (
-                <div key={drive.id} className="company-card">
+                <div key={drive.id} className="company-card" onClick={() => openModal(drive,true)}>
                   <h4>{drive.company_name}</h4>
+                  <p>{drive.job_role}</p>
                   <p>Drive Date: {new Date(drive.drive_date).toLocaleDateString()}</p>
-                  <p>{drive.details}</p>
                 </div>
               ))
             ) : (
@@ -145,16 +162,24 @@ const Homepage = () => {
       {showModal && selectedDrive && (
         <div className="modal-overlay">
           <div className="modal-content">
+            <div className="close-animation" onClick={closeModal}>×</div>
             <h3>{selectedDrive.company_name}</h3>
             <p>Drive Date: {new Date(selectedDrive.drive_date).toLocaleDateString()}</p>
             <p>Job Role: {selectedDrive.job_role}</p>
             <p>CTC: {selectedDrive.ctc}LPA</p>
-            <p>Requirements: {selectedDrive.requirements}</p>
+            <p
+              dangerouslySetInnerHTML={{
+                __html: selectedDrive.requirements.replace(/\. /g, '.<br />'),
+              }}
+              className="Job_desc_paragraph"></p>
             <p>Cut off: {selectedDrive.cutoff}</p>
-            <button onClick={() => handleRegister(selectedDrive.company_id)}>
+            <button 
+            onClick={() => handleRegister(selectedDrive.id)}
+            disabled={isRegistering}
+            hidden={onlyInfoBool}
+            >
               Register for this Drive
             </button>
-            <button onClick={closeModal}>Close</button>
           </div>
         </div>
       )}

@@ -1,14 +1,16 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext'; // Assuming you are using the AuthContext for user state
 import '../StyleSheets/Navbar.css'; // Styling file
 import "react-toastify/dist/ReactToastify.css";
-import {toast} from 'react-toastify'
+import { toast } from 'react-toastify';
 
 const Navbar = () => {
   const { user } = useContext(AuthContext); // Get the current user from context
-  // console.log(user.role)
   const navigate = useNavigate();
+
+  // State for toggling the navbar visibility on mobile
+  const [isNavbarVisible, setNavbarVisible] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token'); // Remove the token from localStorage
@@ -19,9 +21,7 @@ const Navbar = () => {
   // Role-based navigation links
   const renderLinks = () => {
     if (user) {
-      // console.log(user)
       if (user.role === 'Student') {
-        // Student can only see the logout link
         return (
           <div className="navbar-links">
             <Link to="/profile">Profile</Link>
@@ -31,7 +31,6 @@ const Navbar = () => {
           </div>
         );
       } else if (user.role === 'Volunteer') {
-        // Volunteer sees QR Scanner and logout
         return (
           <div className="navbar-links">
             <Link to="/profile">Profile</Link>
@@ -42,7 +41,6 @@ const Navbar = () => {
           </div>
         );
       } else if (user.role === 'Admin') {
-        // Admin sees all the links
         return (
           <div className="navbar-links">
             <Link to="/profile">Profile</Link>
@@ -55,7 +53,6 @@ const Navbar = () => {
         );
       }
     } else {
-      // If no user is logged in (i.e., no token), just show the login link
       return (
         <div className="navbar-links">
           <Link to="/login">Login</Link>
@@ -64,12 +61,26 @@ const Navbar = () => {
     }
   };
 
+  // Toggle the navbar visibility
+  const toggleNavbar = () => {
+    setNavbarVisible(!isNavbarVisible);
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-logo">
         <Link to={user ? "/" : "/login"}>Sahyadri Placements</Link>
       </div>
-      {renderLinks()} {/* Render links based on the user role */}
+
+      {/* Hamburger icon for mobile */}
+      <button className="navbar-toggle-button" onClick={toggleNavbar}>
+        &#9776; {/* Hamburger icon */}
+      </button>
+
+      {/* Navbar links that toggle visibility on mobile */}
+      <div className={`navbar-dos ${isNavbarVisible ? '' : 'hide'}`}>
+        {renderLinks()} {/* Render links based on the user role */}
+      </div>
     </nav>
   );
 };

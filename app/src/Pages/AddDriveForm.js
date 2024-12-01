@@ -55,21 +55,21 @@ const AddDriveForm = () => {
     <div className="add-drive-form">
       <h2>Add New Drive</h2>
       {error && <div className="error">{error}</div>}
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className='reset_form'>
         <div className="form-group">
-          <label>Company Name:</label>
           <input
             type="text"
             value={companyName}
+            placeholder='Company Name'
             onChange={(e) => setCompanyName(e.target.value)}
             required
           />
         </div>
 
         <div className="form-group">
-          <label>CTC:</label>
           <input
             type="text"
+            placeholder='Salary Details'
             value={ctc}
             onChange={(e) => setCtc(e.target.value)}
             required
@@ -77,29 +77,29 @@ const AddDriveForm = () => {
         </div>
 
         <div className="form-group">
-          <label>Job Description & Requirements:</label>
           <textarea
             value={requirements}
+            placeholder='Job Description & Requirements'
             onChange={(e) => setRequirements(e.target.value)}
             required
           ></textarea>
         </div>
 
         <div className="form-group">
-          <label>Job Role:</label>
           <input
             type="text"
             value={jobRole}
+            placeholder='Job Role'
             onChange={(e) => setJobRole(e.target.value)}
             required
           />
         </div>
 
         <div className="form-group">
-          <label>CGPA Cutoff:</label>
           <input
             type="number"
             value={cutoff}
+            placeholder='CGPA Cutoff'
             onChange={(e) => setCutoff(e.target.value)}
             required
             min="0"

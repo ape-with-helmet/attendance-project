@@ -1,212 +1,215 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import AddDriveForm from './AddDriveForm.js'; // Import the AddDriveForm component
+import AddDriveForm from './AddDriveForm.js';
 import '../StyleSheets/adminControl.css';
+import { toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
-import {toast} from 'react-toastify'
-import int1 from '../resources/interview1.png'
-import att1 from '../resources/attendance1.webp'
-import role1 from '../resources/roles.png'
+import int1 from '../resources/interview1.png';
+import att1 from '../resources/attendance1.webp';
+import role1 from '../resources/roles.png';
 
 const AdminControlPage = () => {
-  const [isAddDriveOpen, setIsAddDriveOpen] = useState(false);
-  const [isChangeRoleOpen, setIsChangeRoleOpen] = useState(false);
-  const [isDownloadAttendanceOpen, setIsDownloadAttendanceOpen] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState({
+    addDrive: false,
+    changeRole: false,
+    downloadAttendance: false,
+  });
   const [students, setStudents] = useState([]);
   const [driveList, setDriveList] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedStudent, setSelectedStudent] = useState(null); // For popup
+  const [selectedStudent, setSelectedStudent] = useState(null);
   const [role, setRole] = useState('');
   const [selectedDrive, setSelectedDrive] = useState({
-    driveId:0,
-    driveName:'',
-    driveDate:new Date(),
+    driveId: 0,
+    driveName: '',
+    driveDate: new Date(),
   });
 
-  const token = localStorage.getItem('token');  // Get the JWT token from localStorage
-
-  const fetchStudents = async () => {
-    const studResponse = await axios.get('http://localhost:5000/role/students', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-    console.log("StudData",studResponse.data)
-    setStudents(studResponse.data)
-  }
-  const fetchDrives = async () => {
-    const driveResponse = await axios.get('http://localhost:5000/role/drives', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-    console.log("DriveFata",driveResponse.data)
-    setDriveList(driveResponse.data)
-  }
+  const token = localStorage.getItem('token');
   useEffect(() => {
-    // Fetch student list and drive list on page load with JWT token in headers
-    fetchStudents()
-    fetchDrives()
-  }, [token]);
+    // Unselect the student whenever searchQuery changes
+    setSelectedStudent(null);
+  }, [searchQuery]);
+  const fetchStudents = async () => {
+    try {
+      const studResponse = await axios.get('http://localhost:5000/role/students', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setStudents(studResponse.data);
+    } catch (error) {
+      toast.error('Error fetching students.');
+    }
+  };
+
+  const fetchDrives = async () => {
+    try {
+      const driveResponse = await axios.get('http://localhost:5000/role/drives', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setDriveList(driveResponse.data);
+    } catch (error) {
+      toast.error('Error fetching drives.');
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+    fetchDrives();
+  }, []);
 
   const handleRoleChange = async (userId) => {
     try {
       await axios.put(
         `http://localhost:5000/role/assign-role/${userId}`,
-        { role }, // Send role in the payload
+        { role },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      toast.info('Role updated successfully');
+      toast.success('Role updated successfully');
     } catch (error) {
-      console.error('Error updating role:', error);
-      toast.error('Failed to update role. Please try again.');
+      toast.error('Failed to update role.');
     }
   };
-  
 
   const handleDownloadAttendance = async () => {
     try {
-      console.log(selectedDrive);
       const response = await axios.post(
         'http://localhost:5000/role/attendance/download',
-        { driveId: selectedDrive.driveId, driveName:selectedDrive.driveName },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          responseType: 'blob',
-        }
+        { driveId: selectedDrive.driveId, driveName: selectedDrive.driveName },
+        { headers: { Authorization: `Bearer ${token}` }, responseType: 'blob' }
       );
   
-      // Log the response headers object to see how the headers are being structured
-      console.log('Response headers:', response.headers);
-      // Create blob and download file
+      // If the response is a blob (Excel file), process it
       const blob = new Blob([response.data], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       });
   
-      // Create a link and trigger the download
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = `${selectedDrive.driveName} ${new Date(selectedDrive.driveDate).toLocaleDateString('en-GB')} Attendance`;
+      link.download = `${selectedDrive.driveName}_${new Date(selectedDrive.driveDate).toLocaleDateString('en-GB')}.xlsx`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
   
-      console.log('Download initiated successfully!',selectedDrive.driveName);
+      toast.success('Download successful');
     } catch (error) {
-      toast.error('Error downloading attendance');
-      console.error(error);
+      console.log(error)
+      // If the error is due to no data found (404), show the error message from the backend
+      if (error.response && error.response.status === 404) {
+        toast.error(error.response.data.message || 'No data found for the selected drive');
+      } else {
+        toast.error('An error occurred while downloading the attendance');
+      }
     }
   };
   
 
+  const togglePopup = (type) => {
+    setIsPopupOpen((prev) => ({ ...prev, [type]: !prev[type] }));
+  };
+
   return (
-    <>
     <div className='admin-control-container'>
       <h1>Admin Control Panel</h1>
       <div className="admin-control-page">
-        {/* Section 1: Add Drive */}
-        <div className="section">
-          <img src={int1}/>
-          <button onClick={() => setIsAddDriveOpen(true)}>Add Drive</button>
-          {isAddDriveOpen && (
-            <div className="popup">
-              <button className="close-btn" onClick={() => setIsAddDriveOpen(false)}>Close</button>
-              <AddDriveForm />
-            </div>
-          )}
-        </div>
-      {/* Section 2: Change Role */}
-        <div className="section">
-          <img src={role1}/>
-          <button onClick={() => setIsChangeRoleOpen(true)}>Change Roles</button>
-          {isChangeRoleOpen && (
-            <div className="popup">
-              <div className="search-bar">
-                <input
-                  type="text"
-                  placeholder="Search by USN or Name"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
-
-              <div className="student-list">
-                {searchQuery &&
-                  students
-                    .filter(
-                      (student) =>
-                        student.usn.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        student.name.toLowerCase().includes(searchQuery.toLowerCase())
-                    )
-                    .map((student) => (
-                      <div
-                        key={student.usn}
-                        className="student-item"
-                        onClick={() => setSelectedStudent(student)}
-                      >
-                        {student.name} - {student.usn} ({student.role || "No Role"})
-                      </div>
-                    ))}
-              </div>
-
-              {/* Popup for role change */}
-              {selectedStudent && (
-                <div className="popup">
-                  <div className="popup-content">
-                    <h3>Change Role for {selectedStudent.name}</h3>
-                    <select
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                    >
-                      <option value="">Select Role</option>
-                      <option value="Admin">Admin</option>
-                      <option value="Student">Student</option>
-                      <option value="Volunteer">Volunteer</option>
-                    </select>
-                    <button onClick={handleRoleChange}>Change Role</button>
-                    <button onClick={() => setSelectedStudent(null)}>Cancel</button>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+        <div className="section" onClick={() => togglePopup('addDrive')}>
+          <img src={int1} alt="Add Drive" />
+          <div className='rolling_part'>Add Drive</div>
         </div>
 
+        <div className="section" onClick={() => togglePopup('changeRole')}>
+          <img src={role1} alt="Change Roles" />
+          <div className='rolling_part'>Change Roles</div>
+        </div>
 
-      {/* Section 3: Download Attendance */}
-        <div className="section">
-          <img src={att1}/>
-          <button onClick={() => setIsDownloadAttendanceOpen(true)}>Download Attendance</button>
-          {isDownloadAttendanceOpen && (
-            <div className="popup">
-              <button className="close-btn" onClick={() => setIsDownloadAttendanceOpen(false)}>Close</button>
-              <div className="dropdown">
-                <label>Select Drive:</label>
-                <select 
-                  value={selectedDrive.driveId ? `${selectedDrive.driveId}-${selectedDrive.driveName}-${selectedDrive.driveDate}` : ''}
-                  onChange={(e) => {
-                    const [driveId, driveName, driveDate] = e.target.value.split('-');
-                    setSelectedDrive({ 
-                      driveId: parseInt(driveId), 
-                      driveName, 
-                      driveDate: new Date(driveDate),  // Ensure it's a Date object
-                    });
-                  }}
-                >
-                  <option value="">Select a Drive</option>
-                  {driveList.map(drive => (
-                    <option key={drive.id} value={`${drive.id}-${drive.name}-${new Date(drive.drive_date)}`}>
-                      {drive.name} {new Date(drive.drive_date).toLocaleDateString('en-GB')}
-                    </option>
-                  ))}
-                </select>
-                {console.log(selectedDrive)}
-                <button onClick={handleDownloadAttendance}>Download Attendance</button>
-              </div>
-            </div>
-          )}
+        <div className="section" onClick={() => togglePopup('downloadAttendance')}>
+          <img src={att1} alt="Download Attendance" />
+          <div className='rolling_part'>Download Attendance</div>
         </div>
       </div>
+
+      {isPopupOpen.addDrive && (
+        <div className="popup">
+          <div className="popup-content">
+          <div className="close-animation" onClick={() => togglePopup('addDrive')}>×</div>
+            <AddDriveForm />
+          </div>
+        </div>
+      )}
+
+      {isPopupOpen.changeRole && (
+        <div className="popup">
+          <div className="popup-content">
+          <div className="close-animation" onClick={() => togglePopup('changeRole')}>×</div>
+            
+            <div className="search-bar">
+              <input
+                type="text"
+                placeholder="Search Student by Name..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <div className="student-list">
+              {searchQuery && students.filter(student => student.name.toLowerCase().includes(searchQuery.toLowerCase())).map((student, idx) => (
+                <div key={idx} className="student-item" onClick={() => setSelectedStudent(student)}>
+                  {student.name}
+                </div>
+              ))}
+            </div>
+            {selectedStudent && (
+              <div className="dropdown">
+                <select value={role} onChange={(e) => setRole(e.target.value)}>
+                  <option value="" disabled>Select Role</option>
+                  <option value="Admin">Admin</option>
+                  <option value="Volunteer">Volunteer</option>
+                  <option value="Student">Student</option>
+                </select>
+                <div className="reset_button" onClick={() => handleRoleChange(selectedStudent.id) }>Change Role</div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {isPopupOpen.downloadAttendance && (
+        <div className="popup">
+          <div className="popup-content">
+            <div className="close-animation" onClick={() => togglePopup('downloadAttendance')}>
+              ×
+            </div>
+            <div className="dropdown">
+              <select
+                value={selectedDrive.driveId}
+                onChange={(e) => {
+                  const selectedOption = e.target.options[e.target.selectedIndex];
+                  setSelectedDrive({
+                    driveId: selectedOption.value,
+                    driveName: selectedOption.dataset.name,
+                    driveDate: selectedOption.dataset.date,
+                  });
+                }}
+              >
+                <option value="">Select Drive</option>
+                {driveList.map((drive, idx) => (
+                  <option
+                    key={idx}
+                    value={drive.id}
+                    data-name={drive.name}
+                    data-date={new Date(drive.drive_date).toLocaleDateString()}
+                  >
+                    {drive.name} - {new Date(drive.drive_date).toLocaleDateString()}
+                  </option>
+                ))}
+              </select>
+              <button onClick={handleDownloadAttendance} className='reset_button'>
+                Download Attendance
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
-    </>
   );
 };
 

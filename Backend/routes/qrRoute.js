@@ -32,28 +32,37 @@ const decrypt = (encryptedData) => {
 router.post('/register', authenticate, async (req, res) => {
   const { driveId } = req.body;
   const userId = req.user.id;
-  console.log(SECRET_KEY)
+  // console.log(driveId)
   try {
     // Check if the user is already registered for this drive
     const [existingRegistration] = await pool.query(
       'SELECT * FROM applied_drives WHERE user_id = ? AND drive_id = ?',
       [userId, driveId]
     );
-    console.log("Query Exec: ",existingRegistration)
+    // console.log("Query Exec: ",existingRegistration)
     if (existingRegistration.length > 0) {
       return res.status(400).json({ message: 'You are already registered for this drive' });
     };
     var [[userData]] = await pool.query(
-      `SELECT u.email AS email, u.name AS user_name, c.name AS company_name, d.drive_date AS drive_date
-       FROM users u
-       JOIN drives d ON u.id = ? 
-       JOIN companies c ON d.company_id = c.id
-       WHERE d.id = ?`,
-      [userId, driveId]
+      `SELECT u.email AS email, u.name AS user_name, u.cgpa AS cgpa FROM users u WHERE u.id=?`,
+      [userId]
     );
+    // Perform the query with company_id as driveId
+    var [[driveData]] = await pool.query(
+      `SELECT c.name AS company_name, d.drive_date AS drive_date, d.cutoff AS cutoff
+      FROM companies c 
+      JOIN drives d ON c.id = d.company_id 
+      WHERE d.id = ?`,
+      [driveId]  // Using driveId as the company_id
+    );
+    // console.log(driveData,userData.cgpa)
+    if(driveData.cutoff>userData.cgpa){
+      return res.status(400).json({message:"You dont qualify for this drive!"})
+    }
+    
     userData.drive_date = new Date(userData.drive_date).toLocaleDateString('en-GB'); // Uses UK format (dd/mm/yyyy)
     // userData = userData[0][0]
-    console.log("QUER##",userData.drive_date)
+    // console.log("QUER##",userData.drive_date)
     // Register for the drive
     await pool.query(
       'INSERT INTO applied_drives (user_id, drive_id) VALUES (?, ?)',
@@ -93,12 +102,12 @@ router.post('/register', authenticate, async (req, res) => {
               <h2 style="color: #333333; text-align: center;">Drive Registration Confirmation</h2>
               <p style="color: #555555; font-size: 16px;">Dear <strong>${userData.user_name}</strong>,</p>
               
-              <p style="color: #555555; font-size: 16px;">We are delighted to confirm your successful registration for the upcoming recruitment drive hosted by <strong>${userData.company_name}</strong>.</p>
+              <p style="color: #555555; font-size: 16px;">We are delighted to confirm your successful registration for the upcoming recruitment drive hosted by <strong>${driveData.company_name}</strong>.</p>
               
               <h3 style="color: #333333; margin-bottom: 10px;">Drive Details</h3>
               <ul style="color: #555555; font-size: 16px; line-height: 1.5;">
-                <li><strong>Company Name:</strong> ${userData.company_name}</li>
-                <li><strong>Drive Date:</strong> ${userData.drive_date}</li>
+                <li><strong>Company Name:</strong> ${driveData.company_name}</li>
+                <li><strong>Drive Date:</strong> ${driveData.drive_date}</li>
               </ul>
               
               <p style="color: #555555; font-size: 16px;">Below is your unique QR code. Please keep it accessible during the event for attendance marking.</p>
@@ -118,7 +127,7 @@ router.post('/register', authenticate, async (req, res) => {
       `,
       attachments: [
         {
-          filename: 'qr-code.png', // Name of the file
+          filename: `${driveData.company_name}_Attendance_QR`, // Name of the file
           content: qrCodeBuffer,   // QR code image buffer
           cid: 'qrCodeImage'       // Content ID to embed the image
         },
