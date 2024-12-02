@@ -29,7 +29,7 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (newPassword) {
+    if (!newPassword) {
       return toast.warn('Enter the new password')
     }
     try {
