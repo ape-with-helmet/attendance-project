@@ -10,6 +10,7 @@ const router = express.Router();
 
 // Secret key for encryption and decryption
 const ENCRYPTION_KEY = process.env.SECRET_KEY; // Change this to your actual secret
+const IV_LENGTH = 16
 
 // Encrypt function
 function encrypt(text) {
