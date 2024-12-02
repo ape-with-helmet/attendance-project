@@ -17,7 +17,6 @@ app.use(cors({
   origin: 'https://attendance-project-one.vercel.app', // Allow requests from your frontend origin
   methods: 'GET, POST, PUT, DELETE', // Allow these HTTP methods
   allowedHeaders: 'Content-Type, Authorization', // Allow these headers in requests
-  credentials: true,
 }));
 
 app.use(express.json()); // Parse JSON request bodies
