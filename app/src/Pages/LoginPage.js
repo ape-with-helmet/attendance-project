@@ -12,12 +12,12 @@ const LoginPage = () => {
   const history = useNavigate();
   const handleLogin = async (e) => {
     e.preventDefault();
-
+    if (!email||!password) {
+      toast.warn("Please enter all fields")
+      return
+    }
+    const loadingToast = toast.loading('Logging you in...');
     try {
-      if (!email||!password) {
-        toast.warn("Please enter all fields")
-        return
-      }
       const response = await axios.post('https://attendance-project-eibp.onrender.com/auth/login', { email, password });
       if (response.data.status === 'success' && response.data.token) {
         // Save JWT token to localStorage
@@ -28,14 +28,24 @@ const LoginPage = () => {
         
           // Notify AuthContext about the new login
           window.dispatchEvent(new Event('storage'));
-          toast.success("Logged in successfully")
+          toast.update(loadingToast, {
+            render: 'Logged in successfully!',
+            type: 'success',
+            isLoading: false,
+            autoClose: 3000,
+          });
           window.location.href = '/';
         }
       } else {
         console.log('Login failed:', response.data.message);
       }
     } catch (error) {
-      toast.error(error.response.data.message)
+      toast.update(loadingToast, {
+        render: 'Login Failed!',
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000,
+      });
       console.error('Login failed:', error);
     }
   };
