@@ -11,7 +11,8 @@ const QRCodeScanner = () => {
   const isScannerInitialized = useRef(false); // Track if scanner is initialized
   let isScanning = true;
   const sendToBackend = async (message) => {
-    if (!isScanning) return;
+    console.log(isScanning)
+    if (!isScanning) {return};
     isScanning = false
     try {
       const response = await axios.post(
