@@ -20,13 +20,22 @@ function encrypt(text) {
   return `${iv.toString('hex')}:${encrypted}`; // Return the IV and encrypted text
 }
 
+// Decrypt Function
 function decrypt(text) {
-  const [ivHex, encryptedText] = text.split(':');
-  const iv = Buffer.from(ivHex, 'hex');
-  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
-  let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
-  return decrypted;
+  try {
+    const [ivHex, encryptedText] = text.split(':');
+    const iv = Buffer.from(ivHex, 'hex'); // Parse IV from the string
+    if (iv.length !== IV_LENGTH) {
+      throw new Error('Invalid IV length'); // Validate IV size
+    }
+    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+    let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
+    decrypted += decipher.final('utf8');
+    return decrypted;
+  } catch (error) {
+    console.error('Error decrypting text:', error.message);
+    throw error; // Re-throw error for logging/debugging
+  }
 }
 // Registration API to generate QR code
 router.post('/register', authenticate, async (req, res) => {

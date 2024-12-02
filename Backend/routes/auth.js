@@ -146,7 +146,7 @@ router.post('/forgot-password', async (req, res) => {
       },
     });
 
-    const resetUrl = `http://localhost:3000/reset-password?token=${resetToken}`;
+    const resetUrl = `https://attendance-project-one.vercel.app/reset-password?token=${resetToken}`;
 
     // HTML content for the email
     const htmlContent = `
