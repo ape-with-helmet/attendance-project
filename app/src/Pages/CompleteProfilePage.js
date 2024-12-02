@@ -20,7 +20,7 @@ const CompleteProfilePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('http://localhost:5000/auth/complete-profile', formData);
+      const res = await axios.post('https://attendance-project-eibp.onrender.com/auth/complete-profile', formData);
       if (res.data.status === 'success') {
         history.push('/home');
       }

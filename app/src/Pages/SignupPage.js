@@ -21,7 +21,7 @@ const SignupPage = () => {
       return
     }
     try {
-      const response = await axios.post('http://localhost:5000/auth/signup', {
+      const response = await axios.post('https://attendance-project-eibp.onrender.com/auth/signup', {
         name,
         usn,
         email,

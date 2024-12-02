@@ -34,7 +34,7 @@ const ResetPassword = () => {
     }
     try {
       // Send the reset request to backend
-      const response = await axios.post("http://localhost:5000/auth/reset-password", {
+      const response = await axios.post("https://attendance-project-eibp.onrender.com/auth/reset-password", {
         token,
         newPassword,
       });

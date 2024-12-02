@@ -13,7 +13,7 @@ const QRCodeScanner = () => {
   const sendToBackend = async (message) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/qr/mark-attendance", 
+        "https://attendance-project-eibp.onrender.com/qr/mark-attendance", 
         { data: message },
         {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }

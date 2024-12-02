@@ -30,7 +30,7 @@ const Homepage = () => {
     const loadingToast = toast.loading('Loading companies and upcoming drives...'); // Show loading toast
 
     try {
-      const response = await axios.get('http://localhost:5000/home/companies');
+      const response = await axios.get('https://attendance-project-eibp.onrender.com/home/companies');
       const today = new Date();
       // Filter out past drives and sort by upcoming dates
       const filteredCompanies = response.data;
@@ -61,7 +61,7 @@ const Homepage = () => {
     try {
       const token = localStorage.getItem('token');
       if (token) {
-        const response = await axios.get('http://localhost:5000/home/registered-drives', {
+        const response = await axios.get('https://attendance-project-eibp.onrender.com/home/registered-drives', {
           headers: { Authorization: `Bearer ${token}` },
         });
         const filteredDrives = response.data
@@ -91,7 +91,7 @@ const Homepage = () => {
     const loadingRegisterToast = toast.loading("Registration in Process...")
     try {
       const response = await axios.post(
-        'http://localhost:5000/qr/register',
+        'https://attendance-project-eibp.onrender.com/qr/register',
         { driveId },
         {
           headers: { Authorization: `Bearer ${token}` },

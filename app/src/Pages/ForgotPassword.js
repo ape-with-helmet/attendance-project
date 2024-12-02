@@ -17,7 +17,7 @@ const ForgotPasswordPage = () => {
     }
     try {
 
-      const response = await axios.post('http://localhost:5000/auth/forgot-password', { email });
+      const response = await axios.post('https://attendance-project-eibp.onrender.com/auth/forgot-password', { email });
       toast(response.data.message);
     } catch (err) {
       toast.error(err.response.data.message);

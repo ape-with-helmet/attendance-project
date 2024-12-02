@@ -32,7 +32,7 @@ const AdminControlPage = () => {
   }, [searchQuery]);
   const fetchStudents = async () => {
     try {
-      const studResponse = await axios.get('http://localhost:5000/role/students', {
+      const studResponse = await axios.get('https://attendance-project-eibp.onrender.com/role/students', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setStudents(studResponse.data);
@@ -43,7 +43,7 @@ const AdminControlPage = () => {
 
   const fetchDrives = async () => {
     try {
-      const driveResponse = await axios.get('http://localhost:5000/role/drives', {
+      const driveResponse = await axios.get('https://attendance-project-eibp.onrender.com/role/drives', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setDriveList(driveResponse.data);
@@ -60,7 +60,7 @@ const AdminControlPage = () => {
   const handleRoleChange = async (userId) => {
     try {
       await axios.put(
-        `http://localhost:5000/role/assign-role/${userId}`,
+        `https://attendance-project-eibp.onrender.com/role/assign-role/${userId}`,
         { role },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -73,7 +73,7 @@ const AdminControlPage = () => {
   const handleDownloadAttendance = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:5000/role/attendance/download',
+        'https://attendance-project-eibp.onrender.com/role/attendance/download',
         { driveId: selectedDrive.driveId, driveName: selectedDrive.driveName },
         { headers: { Authorization: `Bearer ${token}` }, responseType: 'blob' }
       );

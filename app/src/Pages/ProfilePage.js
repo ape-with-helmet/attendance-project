@@ -61,7 +61,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:5000/profile/profile", {
+        const response = await axios.get("https://attendance-project-eibp.onrender.com/profile/profile", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -87,7 +87,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        "http://localhost:5000/auth/change-password",
+        "https://attendance-project-eibp.onrender.com/auth/change-password",
         {
           data:{
             currentPassword,
@@ -125,7 +125,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        "http://localhost:5000/profile/profile",
+        "https://attendance-project-eibp.onrender.com/profile/profile",
         {
           name: profile.name,
           phone_number: profile.phone_number,

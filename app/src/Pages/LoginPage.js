@@ -18,7 +18,7 @@ const LoginPage = () => {
         toast.warn("Please enter all fields")
         return
       }
-      const response = await axios.post('http://localhost:5000/auth/login', { email, password });
+      const response = await axios.post('https://attendance-project-eibp.onrender.com/auth/login', { email, password });
       if (response.data.status === 'success' && response.data.token) {
         // Save JWT token to localStorage
         localStorage.setItem('token', response.data.token);
