@@ -9,25 +9,25 @@ const nodemailer = require('nodemailer');
 const router = express.Router();
 
 // Secret key for encryption and decryption
-const SECRET_KEY = process.env.SECRET_KEY; // Change this to your actual secret
+const ENCRYPTION_KEY = process.env.SECRET_KEY; // Change this to your actual secret
 
 // Encrypt function
-const encrypt = (data) => {
-  const cipher = crypto.createCipher('aes-256-cbc', SECRET_KEY);
-  let encrypted = cipher.update(JSON.stringify(data), 'utf8', 'hex');
+function encrypt(text) {
+  const iv = crypto.randomBytes(IV_LENGTH); // Generate a random initialization vector
+  const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+  let encrypted = cipher.update(text, 'utf8', 'hex');
   encrypted += cipher.final('hex');
-  return encrypted;
-};
+  return `${iv.toString('hex')}:${encrypted}`; // Return the IV and encrypted text
+}
 
-// Decrypt function
-const decrypt = (encryptedData) => {
-  const decipher = crypto.createDecipher('aes-256-cbc', SECRET_KEY);
-  let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+function decrypt(text) {
+  const [ivHex, encryptedText] = text.split(':');
+  const iv = Buffer.from(ivHex, 'hex');
+  const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+  let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
   decrypted += decipher.final('utf8');
-  console.log(decrypted)
-  return JSON.parse(decrypted);
-};
-
+  return decrypted;
+}
 // Registration API to generate QR code
 router.post('/register', authenticate, async (req, res) => {
   const { driveId } = req.body;
