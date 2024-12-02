@@ -8,8 +8,6 @@ const QRCode = require('qrcode');
 const nodemailer = require('nodemailer');
 const router = express.Router();
 
-const crypto = require('crypto');
-
 // Read and validate the encryption key
 const ENCRYPTION_KEY = Buffer.from(process.env.SECRET_KEY, 'hex'); // Convert the hex string to bytes
 const IV_LENGTH = 16; // Initialization vector length for aes-256-cbc
