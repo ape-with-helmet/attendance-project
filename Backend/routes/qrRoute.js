@@ -8,36 +8,43 @@ const QRCode = require('qrcode');
 const nodemailer = require('nodemailer');
 const router = express.Router();
 
-// Secret key for encryption and decryption
-const ENCRYPTION_KEY = process.env.SECRET_KEY; // Change this to your actual secret
-const IV_LENGTH = 16
+const crypto = require('crypto');
+
+// Read and validate the encryption key
+const ENCRYPTION_KEY = Buffer.from(process.env.SECRET_KEY, 'hex'); // Convert the hex string to bytes
+const IV_LENGTH = 16; // Initialization vector length for aes-256-cbc
+
+if (ENCRYPTION_KEY.length !== 32) {
+  throw new Error('Invalid encryption key length. The key must be 32 bytes.');
+}
 
 // Encrypt function
 function encrypt(text) {
-  const iv = crypto.randomBytes(IV_LENGTH); // Generate a random initialization vector
-  const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+  const iv = crypto.randomBytes(IV_LENGTH);
+  const cipher = crypto.createCipheriv('aes-256-cbc', ENCRYPTION_KEY, iv);
   let encrypted = cipher.update(text, 'utf8', 'hex');
   encrypted += cipher.final('hex');
-  return `${iv.toString('hex')}:${encrypted}`; // Return the IV and encrypted text
+  return `${iv.toString('hex')}:${encrypted}`;
 }
 
-// Decrypt Function
+// Decrypt function
 function decrypt(text) {
   try {
     const [ivHex, encryptedText] = text.split(':');
-    const iv = Buffer.from(ivHex, 'hex'); // Parse IV from the string
+    const iv = Buffer.from(ivHex, 'hex');
     if (iv.length !== IV_LENGTH) {
-      throw new Error('Invalid IV length'); // Validate IV size
+      throw new Error('Invalid IV length');
     }
-    const decipher = crypto.createDecipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY), iv);
+    const decipher = crypto.createDecipheriv('aes-256-cbc', ENCRYPTION_KEY, iv);
     let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
     return decrypted;
   } catch (error) {
     console.error('Error decrypting text:', error.message);
-    throw error; // Re-throw error for logging/debugging
+    throw error;
   }
 }
+
 // Registration API to generate QR code
 router.post('/register', authenticate, async (req, res) => {
   const { driveId } = req.body;
