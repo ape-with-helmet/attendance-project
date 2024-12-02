@@ -9,8 +9,10 @@ const QRCodeScanner = () => {
   const [scannedText, setScannedText] = useState('');
   const scannerRef = useRef(null); // Ref to store scanner instance
   const isScannerInitialized = useRef(false); // Track if scanner is initialized
-
+  let isScanning = true;
   const sendToBackend = async (message) => {
+    if (!isScanning) return;
+    isScanning = false
     try {
       const response = await axios.post(
         "https://attendance-project-eibp.onrender.com/qr/mark-attendance", 
@@ -20,8 +22,13 @@ const QRCodeScanner = () => {
         }
       );
       toast.success(response.data.message); // Show success toast
+      
     } catch (err) {
       toast.error(err.response?.data?.message || 'An error occurred');
+    } finally {
+      setTimeout(() => {
+        isScanning = true; // Re-enable scanning after 5 seconds
+      }, 5000);
     }
   };
 
@@ -32,7 +39,7 @@ const QRCodeScanner = () => {
 
       const scanner = new Html5QrcodeScanner(
         'reader',
-        { fps: 60, qrbox: { width: 500, height: 500 } }
+        { fps: 1, qrbox: { width: 500, height: 500 } }
       );
 
       // Store scanner instance in ref
