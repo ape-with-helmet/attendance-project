@@ -16,7 +16,7 @@ const LoginPage = () => {
       toast.warn("Please enter all fields")
       return
     }
-    const loadingToast = toast.loading('Logging you in...');
+    const loadingToast = toast.loading('Logging you in... This can take some time');
     try {
       const response = await axios.post('https://attendance-project-eibp.onrender.com/auth/login', { email, password });
       if (response.data.status === 'success' && response.data.token) {
