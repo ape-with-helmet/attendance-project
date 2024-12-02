@@ -17,7 +17,8 @@ if (ENCRYPTION_KEY.length !== 32) {
 }
 
 // Encrypt function
-function encrypt(text) {
+function encrypt(data) {
+  const text = JSON.stringify(data)
   const iv = crypto.randomBytes(IV_LENGTH);
   const cipher = crypto.createCipheriv('aes-256-cbc', ENCRYPTION_KEY, iv);
   let encrypted = cipher.update(text, 'utf8', 'hex');
@@ -28,20 +29,34 @@ function encrypt(text) {
 // Decrypt function
 function decrypt(text) {
   try {
+    if (typeof text !== 'string') {
+      throw new Error('Invalid input for decryption. Expected a string.');
+    }
+
     const [ivHex, encryptedText] = text.split(':');
+    if (!ivHex || !encryptedText) {
+      throw new Error('Invalid encrypted data format. Expected "iv:encryptedData".');
+    }
+
     const iv = Buffer.from(ivHex, 'hex');
     if (iv.length !== IV_LENGTH) {
       throw new Error('Invalid IV length');
     }
+
     const decipher = crypto.createDecipheriv('aes-256-cbc', ENCRYPTION_KEY, iv);
     let decrypted = decipher.update(encryptedText, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
-    return decrypted;
+
+    // Parse JSON string
+    const data = JSON.parse(decrypted);
+
+    return data;
   } catch (error) {
     console.error('Error decrypting text:', error.message);
     throw error;
   }
 }
+
 
 // Registration API to generate QR code
 router.post('/register', authenticate, async (req, res) => {
