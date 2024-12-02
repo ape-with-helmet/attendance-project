@@ -152,7 +152,7 @@ const AdminControlPage = () => {
             <div className="student-list">
               {searchQuery && students.filter(student => student.name.toLowerCase().includes(searchQuery.toLowerCase())).map((student, idx) => (
                 <div key={idx} className="student-item" onClick={() => setSelectedStudent(student)}>
-                  {student.name}
+                  {student.name} - {student.role}
                 </div>
               ))}
             </div>
